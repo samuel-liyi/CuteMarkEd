@@ -37,3 +37,13 @@ DEPENDPATH += $$PWD/../../app-static
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../app-static/release/libapp-static.a
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../app-static/debug/libapp-static.a
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../app-static/libapp-static.a
+
+##################################################
+# Use internal shared library: Hamcrest-Qt
+##################################################
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Hamcrest-Qt/src/core/release/ -lhamcrestqtcore
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Hamcrest-Qt/src/core/debug/ -lhamcrestqtcore
+else:unix: LIBS += -L$$OUT_PWD/../Hamcrest-Qt/src/core/ -lhamcrestqtcore
+
+INCLUDEPATH += $$PWD/../Hamcrest-Qt/src/core
+DEPENDPATH += $$PWD/../Hamcrest-Qt/src/core

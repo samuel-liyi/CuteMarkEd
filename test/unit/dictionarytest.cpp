@@ -16,24 +16,26 @@
  */
 #include "dictionarytest.h"
 
-#include <QTest>
+#include <matcher/isequal.h>
+#include <matcherassert.h>
+using HamcrestQt::equalTo;
 
 #include <spellchecker/dictionary.h>
 
 void DictionaryTest::returnsLanguageNameForLanguageCode()
 {
     Dictionary german("de_DE", "");
-    QCOMPARE(german.languageName(), QStringLiteral("Deutsch"));
+    ASSERT_THAT(german.languageName(), equalTo(QStringLiteral("Deutsch")));
 
     Dictionary americanEnglish("en_US", "");
-    QCOMPARE(americanEnglish.languageName(), QStringLiteral("U.S. English"));
+    ASSERT_THAT(americanEnglish.languageName(), equalTo(QStringLiteral("U.S. English")));
 }
 
 void DictionaryTest::returnsCountryNameForLanguage()
 {
     Dictionary german("de_DE", "");
-    QCOMPARE(german.countryName(), QStringLiteral("Deutschland"));
+    ASSERT_THAT(german.countryName(), equalTo(QStringLiteral("Deutschland")));
 
     Dictionary americanEnglish("en_US", "");
-    QCOMPARE(americanEnglish.countryName(), QStringLiteral("United States"));
+    ASSERT_THAT(americanEnglish.countryName(), equalTo(QStringLiteral("United States")));
 }
