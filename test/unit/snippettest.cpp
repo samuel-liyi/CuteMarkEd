@@ -17,6 +17,9 @@
 #include "snippettest.h"
 
 #include <QTest>
+#include <matcher/isequal.h>
+#include <matcherassert.h>
+using HamcrestQt::equalTo;
 
 #include <snippets/snippet.h>
 
@@ -58,6 +61,6 @@ void SnippetTest::isInitializedAfterCreation()
     QVERIFY(snippet.trigger.isNull());
     QVERIFY(snippet.description.isNull());
     QVERIFY(snippet.snippet.isNull());
-    QCOMPARE(snippet.cursorPosition, 0);
-    QCOMPARE(snippet.builtIn, false);
+    ASSERT_THAT_MSG("cursorPosition", snippet.cursorPosition, equalTo(0));
+    ASSERT_THAT_MSG("builtIn", snippet.builtIn, equalTo(false));
 }
