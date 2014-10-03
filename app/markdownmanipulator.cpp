@@ -213,18 +213,20 @@ void MarkdownManipulator::insertTable(int rows, int columns, const QList<Qt::Ali
     for (int col = 0; col < columns; ++col) {
         header = headers.at(col);
         QString underline(header.length()+2, QChar('-'));
-
-        switch (alignments.at(col)) {
-        case Qt::AlignCenter:
-            underline.replace(0, 1, ':');
-            underline.replace(underline.length()-1, 1, ':');
-            break;
-        case Qt::AlignRight:
-            underline.replace(underline.length()-1, 1, ':');
-            break;
-        default:
-            break;
-        }
+//this is a hack set value to constant
+         underline.replace(0, 1, ':');
+         underline.replace(underline.length()-1, 1, ':');
+//        switch (alignments.at(col)) {
+//        case Qt::AlignCenter:
+//            underline.replace(0, 1, ':');
+//            underline.replace(underline.length()-1, 1, ':');
+//            break;
+//        case Qt::AlignRight:
+//            underline.replace(underline.length()-1, 1, ':');
+//            break;
+//        default:
+//            break;
+//        }
 
         line.append(underline);
         line.append("|");
