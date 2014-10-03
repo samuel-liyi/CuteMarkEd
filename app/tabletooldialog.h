@@ -21,6 +21,7 @@
 
 #include <QList>
 #include <QMap>
+#include<QTableWidget>
 
 namespace Ui {
 class TableToolDialog;
@@ -56,6 +57,7 @@ private:
 
 private:
     Ui::TableToolDialog *ui;
+    QTableWidget *tableWidget;
     int previousRowCount;
     int previousColumnCount;
     QList<QComboBox *> alignmentComboBoxList;

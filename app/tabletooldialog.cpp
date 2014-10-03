@@ -19,6 +19,13 @@
 
 #include <QComboBox>
 #include <QLineEdit>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include<QTextStream>
+#include<iostream>
+//initial and minimum row and column numbers
+#define MINIMUM_ROWS 10
+#define MINIMUM_COLS 10
 
 // Make QPoint in QMap work
 bool operator<(const QPoint& lhs, const QPoint& rhs)
@@ -34,10 +41,20 @@ bool operator<(const QPoint& lhs, const QPoint& rhs)
 TableToolDialog::TableToolDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TableToolDialog),
-    previousRowCount(0),
-    previousColumnCount(0)
+    previousRowCount(MINIMUM_ROWS),
+    previousColumnCount(MINIMUM_COLS)
 {
     ui->setupUi(this);
+    tableWidget=ui->tableWidget;
+    tableWidget->setWindowTitle("QTableWidget & Item");
+    tableWidget->setRowCount(MINIMUM_ROWS);
+    tableWidget->setColumnCount(MINIMUM_COLS);
+    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+     tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->rowsSpinBox->setValue(MINIMUM_ROWS);
+    ui->columnsSpinBox->setValue(MINIMUM_COLS);
+//    tableWidget->resize(350, 200);  //设置表格
+    tableWidget->show();
     tableSizeChanged();
 }
 
@@ -60,25 +77,34 @@ QList<Qt::Alignment> TableToolDialog::alignments() const
 {
     QList<Qt::Alignment> alignments;
 
-    foreach (QComboBox *cb, alignmentComboBoxList) {
-        Qt::Alignment alignment = (Qt::Alignment)cb->itemData(cb->currentIndex()).toInt();
-        alignments.append(alignment);
-    }
+//    foreach (QComboBox *cb, alignmentComboBoxList) {
+//        Qt::Alignment alignment = (Qt::Alignment)cb->itemData(cb->currentIndex()).toInt();
+//        alignments.append(alignment);
+//    }
 
     return alignments;
 }
 
+
+
 QList<QStringList> TableToolDialog::tableCells() const
 {
     QList<QStringList> table;
+    QString tmp;
 
     for (int row = 0; row < rows(); ++row) {
         QStringList rowData;
-
         for (int col = 0; col < columns(); ++col) {
-            rowData << cellEditorMap[QPoint(col, row)]->text();
+//            tmp=tableWidget->item(row,col)->text();
+            //check for null ptr!!
+            if(tableWidget->item(row,col)){
+                rowData <<(tableWidget->item(row,col)->text());
+                QTextStream(stdout)<<tmp<<endl;
+            }
+            else{
+                rowData<<QString(" ");
+            }
         }
-
         table.append(rowData);
     }
 
@@ -87,20 +113,22 @@ QList<QStringList> TableToolDialog::tableCells() const
 
 void TableToolDialog::tableSizeChanged()
 {
+    //todo decrease table size when remove rows/cols
     int rowDiff = rows() - previousRowCount;
     int columnDiff = columns() - previousColumnCount;
-
+    tableWidget->setRowCount(columns());
+    tableWidget->setColumnCount(rows());
     if (columnDiff > 0) {
         addColumns(columnDiff);
     } else if (columnDiff < 0) {
         removeColumns(columnDiff);
     } else if (rowDiff > 0) {
+
         addRows(rowDiff);
     } else if (rowDiff < 0) {
         removeRows(rowDiff);
     }
-
-    updateTabOrder();
+//    updateTabOrder();
 
     previousColumnCount = columns();
     previousRowCount = rows();
@@ -108,75 +136,87 @@ void TableToolDialog::tableSizeChanged()
 
 void TableToolDialog::addColumns(int newColumns)
 {
-    for (int col = 0; col < newColumns; ++col) {
-        // add combo box to choose alignment of column
-        QComboBox *cb = new QComboBox(ui->tableGroupBox);
-        cb->addItem(tr("Left"), Qt::AlignLeft);
-        cb->addItem(tr("Center"), Qt::AlignCenter);
-        cb->addItem(tr("Right"), Qt::AlignRight);
-        ui->tableGridLayout->addWidget(cb, 0, col+previousColumnCount+1);
-
-        alignmentComboBoxList << cb;
-
-        // add a column of new line edits
-        for (int row = 0; row < rows(); ++row) {
-            QLineEdit *edit = new QLineEdit(ui->tableGroupBox);
-            ui->tableGridLayout->addWidget(edit, row+1, col+previousColumnCount+1);
-
-            cellEditorMap.insert(QPoint(col+previousColumnCount, row), edit);
-        }
+    for(int col=0;col<newColumns;++col){
+        tableWidget->insertColumn(previousColumnCount+1+col);
     }
+//    for (int col = 0; col < newColumns; ++col) {
+//        // add combo box to choose alignment of column
+//        QComboBox *cb = new QComboBox(ui->tableGroupBox);
+//        cb->addItem(tr("Left"), Qt::AlignLeft);
+//        cb->addItem(tr("Center"), Qt::AlignCenter);
+//        cb->addItem(tr("Right"), Qt::AlignRight);
+//        ui->tableGridLayout->addWidget(cb, 0, col+previousColumnCount+1);
+
+//        alignmentComboBoxList << cb;
+
+//        // add a column of new line edits
+//        for (int row = 0; row < rows(); ++row) {
+//            QLineEdit *edit = new QLineEdit(ui->tableGroupBox);
+//            ui->tableGridLayout->addWidget(edit, row+1, col+previousColumnCount+1);
+
+//            cellEditorMap.insert(QPoint(col+previousColumnCount, row), edit);
+//        }
+//    }
 }
 
 void TableToolDialog::removeColumns(int removedColumns)
 {
-    for (int col = 0; col < qAbs(removedColumns); ++col) {
-        // remove alignment combo box in last column
-        QComboBox *cb = alignmentComboBoxList.last();
-
-        alignmentComboBoxList.removeLast();
-        ui->tableGridLayout->removeWidget(cb);
-
-        cb->deleteLater();
-
-        // remove all line edits in last column
-        for (int row = 0; row < rows(); ++row) {
-            QLineEdit *edit = cellEditorMap[QPoint(previousColumnCount-col-1, row)];
-
-            cellEditorMap.remove(QPoint(previousColumnCount-col-1, row));
-            ui->tableGridLayout->removeWidget(edit);
-
-            edit->deleteLater();
-        }
+    for(int col=0;col<removedColumns;++col){
+        tableWidget->removeColumn(previousColumnCount-col-1);
     }
+//    for (int col = 0; col < qAbs(removedColumns); ++col) {
+//        // remove alignment combo box in last column
+//        QComboBox *cb = alignmentComboBoxList.last();
+
+//        alignmentComboBoxList.removeLast();
+//        ui->tableGridLayout->removeWidget(cb);
+
+//        cb->deleteLater();
+
+//        // remove all line edits in last column
+//        for (int row = 0; row < rows(); ++row) {
+//            QLineEdit *edit = cellEditorMap[QPoint(previousColumnCount-col-1, row)];
+
+//            cellEditorMap.remove(QPoint(previousColumnCount-col-1, row));
+//            ui->tableGridLayout->removeWidget(edit);
+
+//            edit->deleteLater();
+//        }
+//    }
 }
 
 void TableToolDialog::addRows(int newRows)
 {
-    for (int row = 0; row < newRows; ++row) {
-        // add a new row of line edits
-        for (int col = 0; col < columns(); ++col) {
-            QLineEdit *edit = new QLineEdit(ui->tableGroupBox);
-            ui->tableGridLayout->addWidget(edit, row+previousRowCount+1, col+1);
-
-            cellEditorMap.insert(QPoint(col, row+previousRowCount), edit);
-        }
+    for(int row=0;row<newRows;++row){
+        tableWidget->insertRow(previousRowCount+1+row);
     }
+//    for (int row = 0; row < newRows; ++row) {
+//        // add a new row of line edits
+//        for (int col = 0; col < columns(); ++col) {
+//            QLineEdit *edit = new QLineEdit(ui->tableGroupBox);
+//            ui->tableGridLayout->addWidget(edit, row+previousRowCount+1, col+1);
+
+//            cellEditorMap.insert(QPoint(col, row+previousRowCount), edit);
+//        }
+//    }
 }
 
 void TableToolDialog::removeRows(int removedRows)
 {
-    for (int row = 0; row < qAbs(removedRows); ++row) {
-        // remove all line edits in current row
-        for (int col = 0; col < columns(); ++col) {
-            QLineEdit *edit = cellEditorMap[QPoint(col, previousRowCount-row-1)];
-
-            cellEditorMap.remove(QPoint(col, previousRowCount-row-1));
-            ui->tableGridLayout->removeWidget(edit);
-
-            edit->deleteLater();
-        }
+    for(int row=0;row<removedRows;++row){
+        tableWidget->removeRow(previousRowCount-1-row);
     }
+//    for (int row = 0; row < qAbs(removedRows); ++row) {
+//        // remove all line edits in current row
+//        for (int col = 0; col < columns(); ++col) {
+//            QLineEdit *edit = cellEditorMap[QPoint(col, previousRowCount-row-1)];
+
+//            cellEditorMap.remove(QPoint(col, previousRowCount-row-1));
+//            ui->tableGridLayout->removeWidget(edit);
+
+//            edit->deleteLater();
+//        }
+//    }
 }
 
 void TableToolDialog::updateTabOrder()
