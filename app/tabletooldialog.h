@@ -22,6 +22,7 @@
 #include <QList>
 #include <QMap>
 #include<QTableWidget>
+#include"spreadsheet.h"
 
 namespace Ui {
 class TableToolDialog;
@@ -47,6 +48,7 @@ public:
 private slots:
     void tableSizeChanged();
 
+
 private:
     void addColumns(int newColumns);
     void removeColumns(int removedColumns);
@@ -57,11 +59,16 @@ private:
 
 private:
     Ui::TableToolDialog *ui;
-    QTableWidget *tableWidget;
+    Spreadsheet *tableWidget;
     int previousRowCount;
     int previousColumnCount;
     QList<QComboBox *> alignmentComboBoxList;
     QMap<QPoint, QLineEdit *> cellEditorMap;
+    QAction *cutAction;
+    QAction *copyAction;
+    QAction *pasteAction;
+    QAction *deleteAction;
+    void CreateActions();
 };
 
 #endif // TABLETOOLDIALOG_H

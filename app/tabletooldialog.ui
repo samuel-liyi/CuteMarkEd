@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>TableToolDialog</class>
  <widget class="QDialog" name="TableToolDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>604</width>
-    <height>440</height>
+    <width>607</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,21 +28,52 @@
   <property name="windowTitle">
    <string>Insert Table</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="rowsLabel">
-     <property name="text">
-      <string>Rows:</string>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="columnsSpinBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="value">
+      <number>4</number>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
     <widget class="QSpinBox" name="rowsSpinBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimum">
       <number>2</number>
      </property>
      <property name="value">
       <number>4</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="rowsLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Rows:</string>
      </property>
     </widget>
    </item>
@@ -50,24 +84,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="columnsSpinBox">
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="value">
-      <number>4</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="tableLabel">
-     <property name="text">
-      <string>Table:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
+   <item row="4" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -77,40 +94,67 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QTableWidget" name="tableWidget">
+   <item row="3" column="0" colspan="3">
+    <widget class="Spreadsheet" name="tableWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
+       <horstretch>1</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>103</width>
-       <height>57</height>
-      </size>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
-     <property name="rowCount">
-      <number>4</number>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="tableLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="columnCount">
-      <number>4</number>
+     <property name="text">
+      <string>Table:</string>
      </property>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <column/>
-     <column/>
-     <column/>
-     <column/>
     </widget>
    </item>
   </layout>
+  <zorder>rowsLabel</zorder>
+  <zorder>columnsLabel</zorder>
+  <zorder>columnsSpinBox</zorder>
+  <zorder>tableLabel</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>rowsSpinBox</zorder>
+  <zorder>tableWidget</zorder>
+  <zorder></zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Spreadsheet</class>
+   <extends>QTableWidget</extends>
+   <header location="global">spreadsheet.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
+  <connection>
+   <sender>columnsSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TableToolDialog</receiver>
+   <slot>tableSizeChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>10</x>
+     <y>57</y>
+    </hint>
+   </hints>
+  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
@@ -156,22 +200,6 @@
     <hint type="destinationlabel">
      <x>41</x>
      <y>21</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>columnsSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>TableToolDialog</receiver>
-   <slot>tableSizeChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>46</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>10</x>
-     <y>57</y>
     </hint>
    </hints>
   </connection>

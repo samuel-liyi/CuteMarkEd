@@ -56,6 +56,9 @@ TableToolDialog::TableToolDialog(QWidget *parent) :
 //    tableWidget->resize(350, 200);  //设置表格
     tableWidget->show();
     tableSizeChanged();
+//    connect(ui->pushButton,SIGNAL(clicked()),tableWidget,SLOT(copy()));
+    CreateActions();
+
 }
 
 TableToolDialog::~TableToolDialog()
@@ -116,8 +119,8 @@ void TableToolDialog::tableSizeChanged()
     //todo decrease table size when remove rows/cols
     int rowDiff = rows() - previousRowCount;
     int columnDiff = columns() - previousColumnCount;
-    tableWidget->setRowCount(columns());
-    tableWidget->setColumnCount(rows());
+    tableWidget->setRowCount(rows());
+    tableWidget->setColumnCount(columns());
     if (columnDiff > 0) {
         addColumns(columnDiff);
     } else if (columnDiff < 0) {
@@ -240,4 +243,29 @@ void TableToolDialog::updateTabOrder()
 
     // tab between last line edit and okay button
     this->setTabOrder(first, ui->buttonBox);
+}
+//actions
+void TableToolDialog::CreateActions(){
+
+cutAction = new QAction(this);
+cutAction->setShortcut(QKeySequence::Cut);
+connect(cutAction, SIGNAL(triggered()), tableWidget, SLOT(cut()));
+addAction(cutAction);
+
+copyAction = new QAction(this);
+copyAction->setShortcut(QKeySequence::Copy);
+connect(copyAction, SIGNAL(triggered()), tableWidget,SLOT(copy()));
+addAction(copyAction);
+
+pasteAction = new QAction(this);
+pasteAction->setShortcut(QKeySequence::Paste);
+connect(pasteAction, SIGNAL(triggered()),
+        tableWidget, SLOT(paste()));
+addAction(pasteAction);
+
+deleteAction = new QAction(this);
+deleteAction->setShortcut(QKeySequence::Delete);
+connect(deleteAction, SIGNAL(triggered()),
+        tableWidget, SLOT(del()));
+addAction(deleteAction);
 }
