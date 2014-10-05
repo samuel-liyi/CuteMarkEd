@@ -1,5 +1,5 @@
 #CuteMarkEd extensions
--------------------
+
 ##features to be implemented:
 * table generator like [this site](http://www.tablesgenerator.com/markdown_tables)
 * supoort easy markup syntax for picture alignment
